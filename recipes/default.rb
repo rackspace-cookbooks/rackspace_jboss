@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-case node['rackspace_jboss']['version']
+case node['rackspace_jboss']['jboss_version']
 when '7.1.1'
   remote_file "#{Chef::Config[:file_cache_path]}/jboss-as-7.1.1.Final.tar.gz" do
     source 'http://download.jboss.org/jbossas/7.1/jboss-as-7.1.1.Final/jboss-as-7.1.1.Final.tar.gz'

@@ -8,5 +8,5 @@ version          	'0.1.0'
 
 recipe 				'rackspace_jboss',		'Installs and configures JBoss'
 
-supports			'redhat', '>=6.3'
-supports			'centos', '>=6.3'
+supports			'redhat', '>= 6.3'
+supports			'centos', '>= 6.3'
