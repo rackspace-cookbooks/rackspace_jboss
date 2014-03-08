@@ -1,16 +1,14 @@
 rackspace_jboss Cookbook
 ================
 
-Installs and configures JBoss AS.
+Installs and configures JBoss AS >= 7.0.0.
 
 
 Requirements
 ------------
 ### Platforms
 Tested on:
-- Ubuntu 12.04
 - RedHat 6.4
-- Debian 7.2
 
 Attributes
 ----------

@@ -17,16 +17,36 @@
 # limitations under the License.
 #
 
-case node['rackspace_jboss']['jboss_version']
-when '7.1.1'
-  remote_file "#{Chef::Config[:file_cache_path]}/jboss-as-7.1.1.Final.tar.gz" do
-    source 'http://download.jboss.org/jbossas/7.1/jboss-as-7.1.1.Final/jboss-as-7.1.1.Final.tar.gz'
-    action :create_if_missing
-  end
+vers = node['rackspace_jboss']['jboss_version']
+mmvers = vers.split('.')[0] + '.' + vers.split('.')[1]
 
-when '7.1.0'
-  remote_file "#{Chef::Config[:file_cache_path]}/jboss-as-7.1.0.Final.tar.gz" do
-    source 'http://download.jboss.org/jbossas/7.1/jboss-as-7.1.0.Final/jboss-as-7.1.0.Final.tar.gz'
-    action :create_if_missing
-  end
+remote_file "#{Chef::Config[:file_cache_path]}/jboss-as-#{vers}.Final.tar.gz" do
+  source "http://download.jboss.org/jbossas/#{mmvers}/jboss-as-#{vers}.Final/jboss-as-#{vers}.Final.tar.gz"
+  action :create_if_missing
+end
+
+group node['rackspace_jboss']['jboss_user'] do
+  action :create
+end
+
+user node['rackspace_jboss']['jboss_user'] do
+  home node['rackspace_jboss']['jboss_home']
+  shell '/bin/false'
+  gid node['rackspace_jboss']['jboss_user']
+end
+
+directory node['rackspace_jboss']['jboss_home'] do
+  owner node['rackspace_jboss']['jboss_user']
+  group node['rackspace_jboss']['jboss_user']
+  mode '0775'
+  action :create
+end
+
+bash 'deploy_jboss' do
+  not_if { File.exists?("#{node['rackspace_jboss']['jboss_home']}/jboss-as-#{vers}.Final/bin/standalone.sh") }
+  user node['rackspace_jboss']['jboss_user']
+  cwd  node['rackspace_jboss']['jboss_home']
+  code <<-EOH
+    tar zxf #{Chef::Config[:file_cache_path]}/jboss-as-#{vers}.Final.tar.gz
+  EOH
 end

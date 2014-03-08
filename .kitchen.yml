@@ -33,3 +33,10 @@ suites:
   - name: default
     run_list:
       - recipe[rackspace_jboss::default]
+
+  - name: jboss_7.0.0
+    run_list:
+      - recipe[rackspace_jboss::default]
+    attributes:
+      rackspace_jboss:
+        jboss_version: 7.0.0
