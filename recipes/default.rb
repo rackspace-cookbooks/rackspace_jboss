@@ -25,20 +25,14 @@ remote_file "#{Chef::Config[:file_cache_path]}/jboss-as-#{vers}.Final.tar.gz" do
   action :create_if_missing
 end
 
-group node['rackspace_jboss']['jboss_user'] do
-  action :create
-end
-
 user node['rackspace_jboss']['jboss_user'] do
   home node['rackspace_jboss']['jboss_home']
   shell '/bin/false'
-  gid node['rackspace_jboss']['jboss_user']
 end
 
 directory node['rackspace_jboss']['jboss_home'] do
   owner node['rackspace_jboss']['jboss_user']
-  group node['rackspace_jboss']['jboss_user']
-  mode '0775'
+  mode '0755'
   action :create
 end
 

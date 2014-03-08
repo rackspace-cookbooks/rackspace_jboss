@@ -9,12 +9,10 @@ describe 'rackspace_jboss::default' do
     end
 
     it 'creates the JBoss user, group, and directory' do
-      expect(chef_run).to create_group('jboss')
       expect(chef_run).to create_user('jboss')
       expect(chef_run).to create_directory('/opt/jboss').with(
         user:  'jboss',
-        group: 'jboss',
-        mode:  '0775'
+        mode:  '0755'
       )
     end
 
