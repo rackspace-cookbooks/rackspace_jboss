@@ -17,11 +17,11 @@
 # limitations under the License.
 #
 
-default['rackspace_jboss']['jboss_home']		        			          = '/opt/jboss'
-default['rackspace_jboss']['jboss_user']			                  		= 'jboss'
+default['rackspace_jboss']['jboss_home']                            = '/opt/jboss'
+default['rackspace_jboss']['jboss_user']                            = 'jboss'
 
 # Valid versions: '7.0.0', '7.0.1', '7.0.2', '7.1.0', '7.1.1'
-default['rackspace_jboss']['jboss_version']			      	           	= '7.1.1'
+default['rackspace_jboss']['jboss_version']                         = '7.1.1'
 
 # Valid install flavors: 'oracle', 'openjdk'
 # Rackspace recommends oracle due to its better instrumentation, and better
@@ -29,7 +29,7 @@ default['rackspace_jboss']['jboss_version']			      	           	= '7.1.1'
 node.override['java']['install_flavor']                             = 'oracle'
 
 # Valid JDK Versions: '6', '7'
-node.override['java']['jdk_version']						                    = '7'
+node.override['java']['jdk_version']                                = '7'
 
 if node['java']['install_flavor'] == 'oracle'
   node.override['java']['oracle']['accept_oracle_download_terms']   = true
