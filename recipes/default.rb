@@ -39,9 +39,10 @@ directory node['rackspace_jboss']['jboss_home'] do
 end
 
 directory node['rackspace_jboss']['jboss_as_conf']['dir'] do
-  owner  'root'
-  mode   '0755'
-  action :create
+  owner     'root'
+  mode      '0755'
+  recursive true
+  action    :create
 end
 
 bash 'deploy_jboss' do
