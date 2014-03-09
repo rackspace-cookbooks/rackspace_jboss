@@ -38,6 +38,12 @@ directory node['rackspace_jboss']['jboss_home'] do
   action :create
 end
 
+directory node['rackspace_jboss']['jboss_as_conf']['dir'] do
+  owner  'root'
+  mode   '0755'
+  action :create
+end
+
 bash 'deploy_jboss' do
   not_if { File.exists?("#{node['rackspace_jboss']['jboss_home']}/jboss-as-#{vers}.Final/bin/standalone.sh") }
   user node['rackspace_jboss']['jboss_user']
@@ -45,4 +51,24 @@ bash 'deploy_jboss' do
   code <<-EOH
     tar zxf #{Chef::Config[:file_cache_path]}/jboss-as-#{vers}.Final.tar.gz
   EOH
+end
+
+template '/etc/init.d/jboss' do
+  source 'jboss.init.erb'
+  owner 'root'
+  group 'root'
+  mode  '0755'
+end
+
+template node['rackspace_jboss']['config']['jboss_as_conf'] do
+  source 'jboss_as.conf.erb'
+  owner 'root'
+  group 'root'
+  mode  '0644'
+  notifies :restart, 'service[jboss]'
+end
+
+service 'jboss' do
+  supports status: true, restart: true, reload: false
+  action   [:enable, :start]
 end
