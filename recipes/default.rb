@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+include_recipe 'java'
+
 vers = node['rackspace_jboss']['jboss_version']
 mmvers = vers.split('.')[0] + '.' + vers.split('.')[1]
 
@@ -26,13 +28,13 @@ remote_file "#{Chef::Config[:file_cache_path]}/jboss-as-#{vers}.Final.tar.gz" do
 end
 
 user node['rackspace_jboss']['jboss_user'] do
-  home node['rackspace_jboss']['jboss_home']
-  shell '/bin/false'
+  home  node['rackspace_jboss']['jboss_home']
+  shell '/bin/bash'
 end
 
 directory node['rackspace_jboss']['jboss_home'] do
-  owner node['rackspace_jboss']['jboss_user']
-  mode '0755'
+  owner  node['rackspace_jboss']['jboss_user']
+  mode   '0755'
   action :create
 end
 
