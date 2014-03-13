@@ -38,6 +38,4 @@ end
 # there has to be a better way to do this, but the dir needs created if it
 # doesn't exist so the template can create the file.
 default['rackspace_jboss']['jboss_as_conf']['dir']                  = '/etc/jboss'
-default['rackspace_jboss']['jboss_as_conf']['file']                 = 'jboss-as.conf'
-default['rackspace_jboss']['config']['jboss_as_conf']               =
-                "#{node['rackspace_jboss']['jboss_as_conf']['dir']}/#{node['rackspace_jboss']['jboss_as_conf']['file']}"
+default['rackspace_jboss']['config']['jboss_as_conf']               = "#{node['rackspace_jboss']['jboss_as_conf']['dir']}/jboss-as.conf"
