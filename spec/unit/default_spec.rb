@@ -27,12 +27,13 @@ describe 'rackspace_jboss::default' do
   end
 
   it 'creates the startup script from template' do
+    expect(chef_run).to create_template('/etc/init.d/jboss')
     expect(chef_run).to render_file('/etc/init.d/jboss').with_content('JBoss standalone control script')
   end
 
   it 'creates the jboss_as conf file from template' do
-    expect(chef_run).to render_file(chef_run.node['rackspace_jboss']['config']['jboss_as_conf']).with_content(
-      'JBOSS_USER')
+    expect(chef_run).to create_template(chef_run.node['rackspace_jboss']['config']['jboss_as_conf'])
+    expect(chef_run).to render_file(chef_run.node['rackspace_jboss']['config']['jboss_as_conf']).with_content('JBOSS_USER')
   end
 
   it 'enables and starts the JBoss service' do
@@ -63,4 +64,41 @@ describe 'rackspace_jboss::default' do
       expect(chef_run).to create_remote_file_if_missing(Chef::Config['file_cache_path'] + '/jboss-as-7.0.0.Final.tar.gz')
     end
   end
+
+  context 'Using OpenJDK 7' do
+    it 'installs openJDK 7' do
+      chef_run.node.override['java']['install_flavor'] = 'openjdk'
+      chef_run.node.override['java']['jdk_version'] = '7'
+      chef_run.converge(described_recipe)
+      expect(chef_run).to install_package('openjdk-7-jdk')
+    end
+  end
+
+  context 'Using OpenJDK 6' do
+    it 'installs openJDK 6' do
+      chef_run.node.override['java']['install_flavor'] = 'openjdk'
+      chef_run.node.override['java']['jdk_version'] = '6'
+      chef_run.converge(described_recipe)
+      expect(chef_run).to install_package('openjdk-6-jdk')
+    end
+  end
+
+  context 'Using Oracle Java 7' do
+    it 'installs Oracle Java 7' do
+      chef_run.node.override['java']['install_flavor'] = 'oracle'
+      chef_run.node.override['java']['jdk_version'] = '7'
+      chef_run.converge(described_recipe)
+      pending 'Oracle Java is installed using an LWRP from the java cookbook, testing is complicated'
+    end
+  end
+
+  context 'Using Oracle Java 6' do
+    it 'installs Oracle Java 6' do
+      chef_run.node.override['java']['install_flavor'] = 'oracle'
+      chef_run.node.override['java']['jdk_version'] = '6'
+      chef_run.converge(described_recipe)
+      pending 'Oracle Java is installed using an LWRP from the java cookbook, testing is complicated'
+    end
+  end
+
 end
