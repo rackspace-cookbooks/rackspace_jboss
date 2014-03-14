@@ -19,8 +19,10 @@
 
 include_recipe 'java'
 
-vers = node['rackspace_jboss']['jboss_version']
-mmvers = vers.split('.')[0] + '.' + vers.split('.')[1]
+vers     = node['rackspace_jboss']['jboss_version']
+mmvers   = vers.split('.')[0] + '.' + vers.split('.')[1]
+bin_dir  = "#{node['rackspace_jboss']['jboss_home']}/jboss-as-#{vers}.Final/bin"
+conf_dir = "#{node['rackspace_jboss']['jboss_home']}/jboss-as-#{vers}.Final/#{node['rackspace_jboss']['jboss_type']}/configuration"
 
 remote_file "#{Chef::Config[:file_cache_path]}/jboss-as-#{vers}.Final.tar.gz" do
   source "http://download.jboss.org/jbossas/#{mmvers}/jboss-as-#{vers}.Final/jboss-as-#{vers}.Final.tar.gz"
@@ -46,12 +48,18 @@ directory node['rackspace_jboss']['jboss_as_conf']['dir'] do
 end
 
 bash 'deploy_jboss' do
-  not_if { File.exists?("#{node['rackspace_jboss']['jboss_home']}/jboss-as-#{vers}.Final/bin/standalone.sh") }
+  not_if { File.exists?("#{bin_dir}/standalone.sh") }
   user node['rackspace_jboss']['jboss_user']
   cwd  node['rackspace_jboss']['jboss_home']
   code <<-EOH
     tar zxf #{Chef::Config[:file_cache_path]}/jboss-as-#{vers}.Final.tar.gz
   EOH
+end
+
+template "#{conf_dir}/#{node['rackspace_jboss']['jboss_xml_file']}" do
+  source "#{node['rackspace_jboss']['jboss_xml_file']}.erb"
+  owner node['rackspace_jboss']['jboss_user']
+  mode  '0644'
 end
 
 template '/etc/init.d/jboss' do
