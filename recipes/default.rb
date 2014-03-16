@@ -60,6 +60,7 @@ template "#{conf_dir}/#{node['rackspace_jboss']['jboss_xml_file']}" do
   source "#{node['rackspace_jboss']['jboss_xml_file']}.erb"
   owner node['rackspace_jboss']['jboss_user']
   mode  '0644'
+  variables(cookbook_name: cookbook_name)
 end
 
 template '/etc/init.d/jboss' do
@@ -67,6 +68,7 @@ template '/etc/init.d/jboss' do
   owner 'root'
   group 'root'
   mode  '0755'
+  variables(cookbook_name: cookbook_name)
 end
 
 template node['rackspace_jboss']['config']['jboss_as_conf'] do
@@ -75,6 +77,21 @@ template node['rackspace_jboss']['config']['jboss_as_conf'] do
   group 'root'
   mode  '0644'
   notifies :restart, 'service[jboss]'
+  variables(cookbook_name: cookbook_name)
+end
+
+template "#{conf_dir}/mgmt-users.properties" do
+  source 'mgmt-users.properties.erb'
+  owner node['rackspace_jboss']['jboss_user']
+  mode '0644'
+  variables(cookbook_name: cookbook_name)
+end
+
+template "#{conf_dir}/application-users.properties" do
+  source 'application-users.properties.erb'
+  owner node['rackspace_jboss']['jboss_user']
+  mode '0644'
+  variables(cookbook_name: cookbook_name)
 end
 
 service 'jboss' do

@@ -47,6 +47,19 @@ describe 'rackspace_jboss::default' do
       chef_run.converge(described_recipe)
       expect(chef_run).to create_remote_file_if_missing(Chef::Config['file_cache_path'] + '/jboss-as-7.1.1.Final.tar.gz')
     end
+
+    it 'creates the users.properties files from templates, and populates them with users' do
+      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.1.1'
+      chef_run.node.set['rackspace_jboss']['config']['mgmt-users'] = [%w(admin 29a28757d330005880b98ead71ba2aa8),
+                                                                      %w(test 8aa2ab17dae89b088500033d75782a92)]
+      chef_run.node.set['rackspace_jboss']['config']['application-users'] = [%w(admin 29a28757d330005880b98ead71ba2aa8),
+                                                                             %w(test 8aa2ab17dae89b088500033d75782a92)]
+      chef_run.converge(described_recipe)
+      conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.1.1.Final/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
+      expect(chef_run).to create_template("#{conf_dir}/mgmt-users.properties")
+      expect(chef_run).to create_template("#{conf_dir}/application-users.properties")
+      expect(chef_run).to create_template("#{conf_dir}/#{chef_run.node['rackspace_jboss']['jboss_xml_file']}")
+    end
   end
 
   context 'JBoss v7.1.0' do
@@ -55,6 +68,19 @@ describe 'rackspace_jboss::default' do
       chef_run.converge(described_recipe)
       expect(chef_run).to create_remote_file_if_missing(Chef::Config['file_cache_path'] + '/jboss-as-7.1.0.Final.tar.gz')
     end
+
+    it 'creates the users.properties files from templates, and populates them with users' do
+      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.1.0'
+      chef_run.node.set['rackspace_jboss']['config']['mgmt-users'] = [%w(admin 29a28757d330005880b98ead71ba2aa8),
+                                                                      %w(test 8aa2ab17dae89b088500033d75782a92)]
+      chef_run.node.set['rackspace_jboss']['config']['application-users'] = [%w(admin 29a28757d330005880b98ead71ba2aa8),
+                                                                             %w(test 8aa2ab17dae89b088500033d75782a92)]
+      chef_run.converge(described_recipe)
+      conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.1.0.Final/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
+      expect(chef_run).to create_template("#{conf_dir}/mgmt-users.properties")
+      expect(chef_run).to create_template("#{conf_dir}/application-users.properties")
+      expect(chef_run).to create_template("#{conf_dir}/#{chef_run.node['rackspace_jboss']['jboss_xml_file']}")
+    end
   end
 
   context 'JBoss v7.0.0' do
@@ -62,6 +88,19 @@ describe 'rackspace_jboss::default' do
       chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.0.0'
       chef_run.converge(described_recipe)
       expect(chef_run).to create_remote_file_if_missing(Chef::Config['file_cache_path'] + '/jboss-as-7.0.0.Final.tar.gz')
+    end
+
+    it 'creates the users.properties files from templates, and populates them with users' do
+      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.0.0'
+      chef_run.node.set['rackspace_jboss']['config']['mgmt-users'] = [%w(admin 29a28757d330005880b98ead71ba2aa8),
+                                                                      %w(test 8aa2ab17dae89b088500033d75782a92)]
+      chef_run.node.set['rackspace_jboss']['config']['application-users'] = [%w(admin 29a28757d330005880b98ead71ba2aa8),
+                                                                             %w(test 8aa2ab17dae89b088500033d75782a92)]
+      chef_run.converge(described_recipe)
+      conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.0.0.Final/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
+      expect(chef_run).to create_template("#{conf_dir}/mgmt-users.properties")
+      expect(chef_run).to create_template("#{conf_dir}/application-users.properties")
+      expect(chef_run).to create_template("#{conf_dir}/#{chef_run.node['rackspace_jboss']['jboss_xml_file']}")
     end
   end
 
