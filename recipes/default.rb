@@ -31,7 +31,9 @@ end
 
 user node['rackspace_jboss']['jboss_user'] do
   home  node['rackspace_jboss']['jboss_home']
-  shell '/bin/bash'
+  shell '/sbin/nologin'
+  uid   254
+  system true
 end
 
 directory node['rackspace_jboss']['jboss_home'] do
