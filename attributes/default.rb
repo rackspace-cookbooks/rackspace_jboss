@@ -19,6 +19,7 @@
 
 default['rackspace_jboss']['jboss_home']                          = '/opt/jboss'
 default['rackspace_jboss']['jboss_user']                          = 'jboss'
+default['rackspace_jboss']['jboss_uid']                           = nil
 
 # Valid versions: '7.0.0', '7.0.1', '7.0.2', '7.1.0', '7.1.1'
 default['rackspace_jboss']['jboss_version']                       = '7.1.1'

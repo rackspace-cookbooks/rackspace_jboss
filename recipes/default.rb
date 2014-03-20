@@ -32,6 +32,10 @@ end
 user node['rackspace_jboss']['jboss_user'] do
   home  node['rackspace_jboss']['jboss_home']
   shell '/bin/bash'
+  system true
+  if node['rackspace_jboss']['jboss_uid']
+    uid node['rackspace_jboss']['jboss_uid']
+  end
 end
 
 directory node['rackspace_jboss']['jboss_home'] do
@@ -48,7 +52,7 @@ directory node['rackspace_jboss']['jboss_as_conf']['dir'] do
 end
 
 bash 'deploy_jboss' do
-  not_if { File.exists?("#{bin_dir}/standalone.sh") }
+  not_if { File.exist?("#{bin_dir}/standalone.sh") }
   user node['rackspace_jboss']['jboss_user']
   cwd  node['rackspace_jboss']['jboss_home']
   code <<-EOH
