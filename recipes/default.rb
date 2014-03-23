@@ -17,7 +17,17 @@
 # limitations under the License.
 #
 
+# include_recipe 'java'
+node.override['java']['install_flavor'] = node['rackspace_jboss']['jdk_flavor']
+node.override['java']['jdk_version']    = node['rackspace_jboss']['jdk_version']
+if node['rackspace_jboss']['jdk_flavor'] == 'oracle'
+  node.override['java']['oracle']['accept_oracle_download_terms'] = true
+end
 include_recipe 'java'
+
+node['rackspace_jboss']['JAVA_OPTS']['set'].each do |name, value|
+  node.default['rackspace_jboss']['config']['JAVA_OPTS'].push(value)
+end
 
 vers     = node['rackspace_jboss']['jboss_version']
 mmvers   = vers.split('.')[0] + '.' + vers.split('.')[1]
@@ -80,6 +90,14 @@ template node['rackspace_jboss']['config']['jboss_as_conf'] do
   owner 'root'
   group 'root'
   mode  '0644'
+  notifies :restart, 'service[jboss]'
+  variables(cookbook_name: cookbook_name)
+end
+
+template "#{bin_dir}/standalone.conf" do
+  source 'standalone.conf.erb'
+  owner node['rackspace_jboss']['jboss_user']
+  mode '0644'
   notifies :restart, 'service[jboss]'
   variables(cookbook_name: cookbook_name)
 end

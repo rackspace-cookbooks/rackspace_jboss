@@ -1,10 +1,14 @@
 require 'spec_helper'
 
 describe 'rackspace_jboss::default' do
-  let(:chef_run) { ChefSpec::Runner.new.converge(described_recipe) }
+  let(:chef_run) do
+    ChefSpec::Runner.new do |node|
+      node.automatic['memory']['total'] = '1048576kB'
+    end.converge(described_recipe)
+  end
 
   it 'installs and sets up java from java cookbook' do
-    expect(chef_run).to include_recipe('java')
+    expect(chef_run).to include_recipe('rackspace_jboss')
     expect(chef_run).to create_directory('/etc/profile.d')
     expect(chef_run).to create_file('/etc/profile.d/jdk.sh')
     expect(chef_run).to run_ruby_block('set-env-java-home')
@@ -58,7 +62,15 @@ describe 'rackspace_jboss::default' do
       conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.1.1.Final/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
       expect(chef_run).to create_template("#{conf_dir}/mgmt-users.properties")
       expect(chef_run).to create_template("#{conf_dir}/application-users.properties")
+    end
+
+    it 'creates the xml config file, and standalone.conf file' do
+      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.1.1'
+      chef_run.converge(described_recipe)
+      conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.1.1.Final/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
+      bin_dir  = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.1.1.Final/bin"
       expect(chef_run).to create_template("#{conf_dir}/#{chef_run.node['rackspace_jboss']['jboss_xml_file']}")
+      expect(chef_run).to create_template("#{bin_dir}/standalone.conf")
     end
   end
 
@@ -77,9 +89,18 @@ describe 'rackspace_jboss::default' do
                                                                              %w(test 8aa2ab17dae89b088500033d75782a92)]
       chef_run.converge(described_recipe)
       conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.1.0.Final/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
+
       expect(chef_run).to create_template("#{conf_dir}/mgmt-users.properties")
       expect(chef_run).to create_template("#{conf_dir}/application-users.properties")
+    end
+
+    it 'creates the xml config file, and standalone.conf file' do
+      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.1.0'
+      chef_run.converge(described_recipe)
+      conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.1.0.Final/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
+      bin_dir  = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.1.0.Final/bin"
       expect(chef_run).to create_template("#{conf_dir}/#{chef_run.node['rackspace_jboss']['jboss_xml_file']}")
+      expect(chef_run).to create_template("#{bin_dir}/standalone.conf")
     end
   end
 
@@ -100,14 +121,22 @@ describe 'rackspace_jboss::default' do
       conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.0.0.Final/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
       expect(chef_run).to create_template("#{conf_dir}/mgmt-users.properties")
       expect(chef_run).to create_template("#{conf_dir}/application-users.properties")
+    end
+
+    it 'creates the xml config file, and standalone.conf file' do
+      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.0.0'
+      chef_run.converge(described_recipe)
+      conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.0.0.Final/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
+      bin_dir  = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.0.0.Final/bin"
       expect(chef_run).to create_template("#{conf_dir}/#{chef_run.node['rackspace_jboss']['jboss_xml_file']}")
+      expect(chef_run).to create_template("#{bin_dir}/standalone.conf")
     end
   end
 
   context 'Using OpenJDK 7' do
     it 'installs openJDK 7' do
-      chef_run.node.override['java']['install_flavor'] = 'openjdk'
-      chef_run.node.override['java']['jdk_version'] = '7'
+      chef_run.node.set['rackspace_jboss']['jdk_flavor'] = 'openjdk'
+      chef_run.node.set['rackspace_jboss']['jdk_version'] = '7'
       chef_run.converge(described_recipe)
       expect(chef_run).to install_package('openjdk-7-jdk')
     end
@@ -115,8 +144,8 @@ describe 'rackspace_jboss::default' do
 
   context 'Using OpenJDK 6' do
     it 'installs openJDK 6' do
-      chef_run.node.override['java']['install_flavor'] = 'openjdk'
-      chef_run.node.override['java']['jdk_version'] = '6'
+      chef_run.node.set['rackspace_jboss']['jdk_flavor'] = 'openjdk'
+      chef_run.node.set['rackspace_jboss']['jdk_version'] = '6'
       chef_run.converge(described_recipe)
       expect(chef_run).to install_package('openjdk-6-jdk')
     end
@@ -124,8 +153,8 @@ describe 'rackspace_jboss::default' do
 
   context 'Using Oracle Java 7' do
     it 'installs Oracle Java 7' do
-      chef_run.node.override['java']['install_flavor'] = 'oracle'
-      chef_run.node.override['java']['jdk_version'] = '7'
+      chef_run.node.set['rackspace_jboss']['jdk_flavor'] = 'oracle'
+      chef_run.node.set['rackspace_jboss']['jdk_version'] = '7'
       chef_run.converge(described_recipe)
       pending 'Oracle Java is installed using an LWRP from the java cookbook, testing is complicated'
     end
@@ -133,11 +162,10 @@ describe 'rackspace_jboss::default' do
 
   context 'Using Oracle Java 6' do
     it 'installs Oracle Java 6' do
-      chef_run.node.override['java']['install_flavor'] = 'oracle'
-      chef_run.node.override['java']['jdk_version'] = '6'
+      chef_run.node.set['rackspace_jboss']['jdk_flavor'] = 'oracle'
+      chef_run.node.set['rackspace_jboss']['jdk_version'] = '6'
       chef_run.converge(described_recipe)
       pending 'Oracle Java is installed using an LWRP from the java cookbook, testing is complicated'
     end
   end
-
 end

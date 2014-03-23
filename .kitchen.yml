@@ -1,4 +1,7 @@
 ---
+settings:
+  parallel: true
+
 driver_plugin: vagrant
 driver_config:
   require_chef_omnibus: true
@@ -39,4 +42,20 @@ suites:
       - recipe[rackspace_jboss::default]
     attributes:
       rackspace_jboss:
-        jboss_version: 7.0.0
+        jboss_version: "7.0.0"
+
+  - name: set_some_overrides
+    run_list:
+      - recipe[rackspace_jboss::default]
+    attributes:
+      rackspace_jboss:
+        jdk_flavor: "openjdk"
+        jdk_version: "6"
+        config:
+          management_listen_address: "127.0.0.1"
+          mgmt-users:
+            admin: "2a0923285184943425d1f53ddd58ec7a"
+        JAVA_OPTS:
+          set:
+            xms: "-Xms128m"
+            xmx: "-Xmx768m"

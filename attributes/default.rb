@@ -32,14 +32,14 @@ default['rackspace_jboss']['jboss_xml_file']                      = 'standalone.
 # Valid install flavors: 'oracle', 'openjdk'
 # Rackspace recommends oracle due to its better instrumentation, and better
 # debugging utilities.  RedHat recommends openjdk.
-node.set['java']['install_flavor']                                = 'oracle'
+default['rackspace_jboss']['jdk_flavor']                          = 'oracle'
 
 # Valid JDK Versions: '6', '7'
-node.set['java']['jdk_version']                                   = '7'
+default['rackspace_jboss']['jdk_version']                         = '7'
 
-if node['java']['install_flavor'] == 'oracle'
-  node.set['java']['oracle']['accept_oracle_download_terms']      = true
-end
+# if node['java']['install_flavor'] == 'oracle'
+#   node.set['java']['oracle']['accept_oracle_download_terms']      = true
+# end
 
 default['rackspace_jboss']['jboss_as_conf']['dir']                = '/etc/jboss'
 default['rackspace_jboss']['config']['jboss_as_conf']             = "#{node['rackspace_jboss']['jboss_as_conf']['dir']}/jboss-as.conf"
