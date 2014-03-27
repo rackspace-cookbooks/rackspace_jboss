@@ -1,11 +1,7 @@
 require 'spec_helper'
 
 describe 'rackspace_jboss::default' do
-  let(:chef_run) do
-    ChefSpec::Runner.new do |node|
-      node.automatic['memory']['total'] = '1048576kB'
-    end.converge(described_recipe)
-  end
+  let(:chef_run) { ChefSpec::Runner.new.converge(described_recipe) }
 
   it 'installs and sets up java from java cookbook' do
     expect(chef_run).to include_recipe('rackspace_jboss')
@@ -102,6 +98,16 @@ describe 'rackspace_jboss::default' do
       expect(chef_run).to create_template("#{conf_dir}/#{chef_run.node['rackspace_jboss']['jboss_xml_file']}")
       expect(chef_run).to create_template("#{bin_dir}/standalone.conf")
     end
+
+    it 'checks mysql_jdbc was deployed' do
+      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.1.0'
+      chef_run.converge(described_recipe)
+      if chef_run.node['rackspace_jboss']['mysql_jdbc']['enabled']
+        install_dir = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.1.0.Final/modules/com/mysql/main"
+        expect(chef_run).to create_directory(install_dir)
+        expect(chef_run).to create_template("#{install_dir}/module.xml")
+      end
+    end
   end
 
   context 'JBoss v7.0.0' do
@@ -130,6 +136,16 @@ describe 'rackspace_jboss::default' do
       bin_dir  = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.0.0.Final/bin"
       expect(chef_run).to create_template("#{conf_dir}/#{chef_run.node['rackspace_jboss']['jboss_xml_file']}")
       expect(chef_run).to create_template("#{bin_dir}/standalone.conf")
+    end
+
+    it 'checks mysql_jdbc was deployed' do
+      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.0.0'
+      chef_run.converge(described_recipe)
+      if chef_run.node['rackspace_jboss']['mysql_jdbc']['enabled']
+        install_dir = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.0.0.Final/modules/com/mysql/main"
+        expect(chef_run).to create_directory(install_dir)
+        expect(chef_run).to create_template("#{install_dir}/module.xml")
+      end
     end
   end
 

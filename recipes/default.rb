@@ -17,11 +17,10 @@
 # limitations under the License.
 #
 
-# include_recipe 'java'
-node.override['java']['install_flavor'] = node['rackspace_jboss']['jdk_flavor']
-node.override['java']['jdk_version']    = node['rackspace_jboss']['jdk_version']
+node.set['java']['install_flavor'] = node['rackspace_jboss']['jdk_flavor']
+node.set['java']['jdk_version']    = node['rackspace_jboss']['jdk_version']
 if node['rackspace_jboss']['jdk_flavor'] == 'oracle'
-  node.override['java']['oracle']['accept_oracle_download_terms'] = true
+  node.set['java']['oracle']['accept_oracle_download_terms'] = true
 end
 include_recipe 'java'
 
@@ -40,8 +39,8 @@ remote_file "#{Chef::Config[:file_cache_path]}/jboss-as-#{vers}.Final.tar.gz" do
 end
 
 user node['rackspace_jboss']['jboss_user'] do
-  home  node['rackspace_jboss']['jboss_home']
-  shell '/bin/bash'
+  home   node['rackspace_jboss']['jboss_home']
+  shell  '/bin/bash'
   system true
   if node['rackspace_jboss']['jboss_uid']
     uid node['rackspace_jboss']['jboss_uid']
@@ -71,49 +70,53 @@ bash 'deploy_jboss' do
 end
 
 template "#{conf_dir}/#{node['rackspace_jboss']['jboss_xml_file']}" do
-  source "#{node['rackspace_jboss']['jboss_xml_file']}.erb"
-  owner node['rackspace_jboss']['jboss_user']
-  mode  '0644'
+  source    "#{node['rackspace_jboss']['jboss_xml_file']}.erb"
+  owner     node['rackspace_jboss']['jboss_user']
+  mode      '0644'
   variables(cookbook_name: cookbook_name)
 end
 
 template '/etc/init.d/jboss' do
-  source 'jboss.init.erb'
-  owner 'root'
-  group 'root'
-  mode  '0755'
+  source    'jboss.init.erb'
+  owner     'root'
+  group     'root'
+  mode      '0755'
   variables(cookbook_name: cookbook_name)
 end
 
 template node['rackspace_jboss']['config']['jboss_as_conf'] do
-  source 'jboss_as.conf.erb'
-  owner 'root'
-  group 'root'
-  mode  '0644'
-  notifies :restart, 'service[jboss]'
+  source    'jboss_as.conf.erb'
+  owner     'root'
+  group     'root'
+  mode      '0644'
+  notifies  :restart, 'service[jboss]'
   variables(cookbook_name: cookbook_name)
 end
 
 template "#{bin_dir}/standalone.conf" do
-  source 'standalone.conf.erb'
-  owner node['rackspace_jboss']['jboss_user']
-  mode '0644'
-  notifies :restart, 'service[jboss]'
+  source    'standalone.conf.erb'
+  owner     node['rackspace_jboss']['jboss_user']
+  mode      '0644'
+  notifies  :restart, 'service[jboss]'
   variables(cookbook_name: cookbook_name)
 end
 
 template "#{conf_dir}/mgmt-users.properties" do
-  source 'mgmt-users.properties.erb'
-  owner node['rackspace_jboss']['jboss_user']
-  mode '0644'
+  source    'mgmt-users.properties.erb'
+  owner     node['rackspace_jboss']['jboss_user']
+  mode      '0644'
   variables(cookbook_name: cookbook_name)
 end
 
 template "#{conf_dir}/application-users.properties" do
-  source 'application-users.properties.erb'
-  owner node['rackspace_jboss']['jboss_user']
-  mode '0644'
+  source    'application-users.properties.erb'
+  owner     node['rackspace_jboss']['jboss_user']
+  mode      '0644'
   variables(cookbook_name: cookbook_name)
+end
+
+if node['rackspace_jboss']['mysql_jdbc']['enabled']
+  include_recipe 'rackspace_jboss::mysql_jdbc'
 end
 
 service 'jboss' do

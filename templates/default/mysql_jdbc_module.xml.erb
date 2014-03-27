@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!-- CHEF MANAGED FILE: DO NOT EDIT
+     Controlling Cookbook: <%= @cookbook_name %>
+-->
+
+<module xmlns="urn:jboss:module:1.0" name="com.mysql">
+	<resources>
+		<resource-root path="<%= node['rackspace_jboss']['mysql_jdbc']['jar_file'] %>"/>
+	</resources>
+	<dependencies>
+		<module name="javax.api"/>
+	</dependencies>
+</module>

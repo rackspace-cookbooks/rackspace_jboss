@@ -101,10 +101,33 @@
                         <password>sa</password>
                     </security>
                 </datasource>
+                <% if node['rackspace_jboss']['mysql_jdbc']['enabled'] -%>
+                <datasource jndi-name="java:jboss/datasources/<%= node['rackspace_jboss']['mysql_jdbc']['datasource_name'] %>" pool-name="<%= node['rackspace_jboss']['mysql_jdbc']['datasource_name'] %>">
+                    <connection-url>jdbc:mysql://<%= node['rackspace_jboss']['mysql_jdbc']['mysql_server']['hostname'] %>:<%= node['rackspace_jboss']['mysql_jdbc']['mysql_server']['port'] %>/<%= node['rackspace_jboss']['mysql_jdbc']['mysql_server']['dbname'] %></connection-url>
+                    <driver>com.mysql</driver>
+                    <transaction-isolation>TRANSACTION_READ_COMMITTED</transaction-isolation>
+                    <pool>
+                        <min-pool-size><%= node['rackspace_jboss']['mysql_jdbc']['mysql_server']['min_pool_size'] %></min-pool-size>
+                        <max-pool-size><%= node['rackspace_jboss']['mysql_jdbc']['mysql_server']['max_pool_size'] %></max-pool-size>
+                    </pool>
+                    <security>
+                        <user-name><%= node['rackspace_jboss']['mysql_jdbc']['mysql_server']['username'] %></user-name>
+                        <password><%= node['rackspace_jboss']['mysql_jdbc']['mysql_server']['password'] %></password>
+                    </security>
+                    <statement>
+                        <prepared-statement-cache-size><%= node['rackspace_jboss']['mysql_jdbc']['mysql_server']['prepared_statement_cache_size'] %></prepared-statement-cache-size>
+                    </statement>
+                </datasource>
+                <% end -%>
                 <drivers>
                     <driver name="h2" module="com.h2database.h2">
                         <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
                     </driver>
+                    <% if node['rackspace_jboss']['mysql_jdbc']['enabled'] -%>
+                    <driver name="com.mysql" module="com.mysql">
+                        <xa-datasource-class>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</xa-datasource-class>
+                    </driver>
+                    <% end -%>
                 </drivers>
             </datasources>
         </subsystem>
