@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-default['rackspace_jboss']['mysql_jdbc']['enabled']                                       = true
+default['rackspace_jboss']['mysql_jdbc']['enabled']                                       = false
 
 # Set the version, either current to have most recent version, or lock
 # in a version such as '5.1.29'.  Currently only supports 5.1 branch.
