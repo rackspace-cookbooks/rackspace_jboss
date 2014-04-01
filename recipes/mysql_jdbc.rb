@@ -27,7 +27,7 @@ install_dir = "#{node['rackspace_jboss']['jboss_home']}/jboss-as-#{vers}.Final/m
 curver      = `curl -s http://dev.mysql.com/downloads/connector/j/ | egrep 'Connector' | egrep -o '[0-9]+\.[0-9]+\.[0-9]+'`.delete("\n") # ~FC048
 
 if node['rackspace_jboss']['mysql_jdbc']['version'] == 'current'
-  node.default['rackspace_jboss']['mysql_jdbc']['version'] = curver
+  node.set['rackspace_jboss']['mysql_jdbc']['version'] = curver
 end
 
 remote_file "#{Chef::Config[:file_cache_path]}/#{node['rackspace_jboss']['mysql_jdbc']['tar_file']}" do
