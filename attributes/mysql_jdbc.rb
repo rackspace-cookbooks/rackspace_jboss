@@ -22,13 +22,6 @@ default['rackspace_jboss']['mysql_jdbc']['enabled']                             
 # in a version such as '5.1.29'.  Currently only supports 5.1 branch.
 default['rackspace_jboss']['mysql_jdbc']['version']                                       = 'current'
 
-default['rackspace_jboss']['mysql_jdbc']['curver']                                        =
-  `curl -s http://dev.mysql.com/downloads/connector/j/ | egrep 'Connector' | egrep -o '[0-9]+\.[0-9]+\.[0-9]+'`.delete("\n") # ~FC048
-
-if default['rackspace_jboss']['mysql_jdbc']['version'] == 'current'
-  default['rackspace_jboss']['mysql_jdbc']['version']                                     = node['rackspace_jboss']['mysql_jdbc']['curver']
-end
-
 default['rackspace_jboss']['mysql_jdbc']['jar_file']                                      =
   "mysql-connector-java-#{node['rackspace_jboss']['mysql_jdbc']['version']}-bin.jar"
 default['rackspace_jboss']['mysql_jdbc']['tar_file']                                      =
