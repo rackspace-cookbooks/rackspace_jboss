@@ -22,14 +22,14 @@ default['rackspace_jboss']['mysql_jdbc']['enabled']                             
 # in a version such as '5.1.29'.  Currently only supports 5.1 branch.
 default['rackspace_jboss']['mysql_jdbc']['version']                                       = 'current'
 
-default['rackspace_jboss']['mysql_jdbc']['jar_file']                                      =
-  "mysql-connector-java-#{node['rackspace_jboss']['mysql_jdbc']['version']}-bin.jar"
-default['rackspace_jboss']['mysql_jdbc']['tar_file']                                      =
-  "mysql-connector-java-#{node['rackspace_jboss']['mysql_jdbc']['version']}.tar.gz"
-default['rackspace_jboss']['mysql_jdbc']['current_url']                                   =
-  "http://cdn.mysql.com/Downloads/Connector-J/#{node['rackspace_jboss']['mysql_jdbc']['tar_file']}"
-default['rackspace_jboss']['mysql_jdbc']['archive_url']                                   =
-  "http://cdn.mysql.com/archives/mysql-connector-java-5.1/#{node['rackspace_jboss']['mysql_jdbc']['tar_file']}"
+# default['rackspace_jboss']['mysql_jdbc']['jar_file']                                      =
+#   "mysql-connector-java-#{node['rackspace_jboss']['mysql_jdbc']['version']}-bin.jar"
+# default['rackspace_jboss']['mysql_jdbc']['tar_file']                                      =
+#   "mysql-connector-java-#{node['rackspace_jboss']['mysql_jdbc']['version']}.tar.gz"
+# default['rackspace_jboss']['mysql_jdbc']['current_url']                                   =
+#   "http://cdn.mysql.com/Downloads/Connector-J/#{node['rackspace_jboss']['mysql_jdbc']['tar_file']}"
+# default['rackspace_jboss']['mysql_jdbc']['archive_url']                                   =
+#   "http://cdn.mysql.com/archives/mysql-connector-java-5.1/#{node['rackspace_jboss']['mysql_jdbc']['tar_file']}"
 
 default['rackspace_jboss']['mysql_jdbc']['datasource_name']                               = 'MySqlDS'
 default['rackspace_jboss']['mysql_jdbc']['mysql_server']['hostname']                      = 'localhost'

@@ -30,11 +30,16 @@ if node['rackspace_jboss']['mysql_jdbc']['version'] == 'current'
   node.set['rackspace_jboss']['mysql_jdbc']['version'] = curver
 end
 
-remote_file "#{Chef::Config[:file_cache_path]}/#{node['rackspace_jboss']['mysql_jdbc']['tar_file']}" do
+jar_file    = "mysql-connector-java-#{node['rackspace_jboss']['mysql_jdbc']['version']}-bin.jar"
+tar_file    = "mysql-connector-java-#{node['rackspace_jboss']['mysql_jdbc']['version']}.tar.gz"
+current_url = "http://cdn.mysql.com/Downloads/Connector-J/#{tar_file}"
+archive_url = "http://cdn.mysql.com/archives/mysql-connector-java-5.1/#{tar_file}"
+
+remote_file "#{Chef::Config[:file_cache_path]}/#{tar_file}" do
   if node['rackspace_jboss']['mysql_jdbc']['version'] == curver
-    source node['rackspace_jboss']['mysql_jdbc']['current_url']
+    source current_url
   else
-    source node['rackspace_jboss']['mysql_jdbc']['archive_url']
+    source archive_url
   end
   action :create_if_missing
 end
@@ -47,13 +52,13 @@ directory install_dir do
 end
 
 bash 'deploy_mysql_jdbc' do
-  not_if { File.exist?("#{install_dir}/#{node['rackspace_jboss']['mysql_jdbc']['jar_file']}") }
+  not_if { File.exist?("#{install_dir}/#{jar_file}") }
   user node['rackspace_jboss']['jboss_user']
   cwd  install_dir
   code <<-EOH
     tar --strip-components=1 -zxf\
-    #{Chef::Config[:file_cache_path]}/#{node['rackspace_jboss']['mysql_jdbc']['tar_file']}\
-    mysql-connector-java-#{node['rackspace_jboss']['mysql_jdbc']['version']}/#{node['rackspace_jboss']['mysql_jdbc']['jar_file']}
+    #{Chef::Config[:file_cache_path]}/#{tar_file}\
+    mysql-connector-java-#{node['rackspace_jboss']['mysql_jdbc']['version']}/#{jar_file}
   EOH
 end
 

@@ -26,7 +26,8 @@ describe 'rackspace_jboss::mysql_jdbc' do
       chef_run.node.set['rackspace_jboss']['mysql_jdbc']['version'] =
         `curl -s http://dev.mysql.com/downloads/connector/j/ | egrep 'Connector' | egrep -o '[0-9]+\.[0-9]+\.[0-9]+'`.delete("\n")
       chef_run.converge(described_recipe)
-      expect(chef_run).to create_remote_file_if_missing(Chef::Config['file_cache_path'] + "/#{chef_run.node['rackspace_jboss']['mysql_jdbc']['tar_file']}")
+      tar_file = "mysql-connector-java-#{chef_run.node['rackspace_jboss']['mysql_jdbc']['version']}.tar.gz"
+      expect(chef_run).to create_remote_file_if_missing(Chef::Config['file_cache_path'] + "/#{tar_file}")
     end
   end
 
@@ -34,7 +35,8 @@ describe 'rackspace_jboss::mysql_jdbc' do
     it 'downloads the mysql_jdbc tarball' do
       chef_run.node.set['rackspace_jboss']['mysql_jdbc']['version'] = '5.1.25'
       chef_run.converge(described_recipe)
-      expect(chef_run).to create_remote_file_if_missing(Chef::Config['file_cache_path'] + "/#{chef_run.node['rackspace_jboss']['mysql_jdbc']['tar_file']}")
+      tar_file = "mysql-connector-java-#{chef_run.node['rackspace_jboss']['mysql_jdbc']['version']}.tar.gz"
+      expect(chef_run).to create_remote_file_if_missing(Chef::Config['file_cache_path'] + "/#{tar_file}")
     end
   end
 end
