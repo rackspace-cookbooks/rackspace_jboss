@@ -66,6 +66,6 @@ template "#{install_dir}/module.xml" do
   source    'mysql_jdbc_module.xml.erb'
   owner     node['rackspace_jboss']['jboss_user']
   mode      '0644'
-  variables(cookbook_name: cookbook_name)
+  variables(cookbook_name: cookbook_name, jar_file: jar_file)
   notifies  :restart, 'service[jboss]'
 end

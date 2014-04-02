@@ -6,7 +6,7 @@
 
 <module xmlns="urn:jboss:module:1.0" name="com.mysql">
 	<resources>
-		<resource-root path="<%= node['rackspace_jboss']['mysql_jdbc']['jar_file'] %>"/>
+		<resource-root path="<%= @jar_file %>"/>
 	</resources>
 	<dependencies>
 		<module name="javax.api"/>
