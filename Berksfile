@@ -1,3 +1,3 @@
 metadata
 
-cookbook 'java', github: 'rackspace-cookbooks/java'
+cookbook 'rackspace_java', github: 'rackspace-cookbooks/rackspace_java'

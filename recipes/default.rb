@@ -17,12 +17,12 @@
 # limitations under the License.
 #
 
-node.set['java']['install_flavor'] = node['rackspace_jboss']['jdk_flavor']
-node.set['java']['jdk_version']    = node['rackspace_jboss']['jdk_version']
+node.set['rackspace_java']['install_flavor'] = node['rackspace_jboss']['jdk_flavor']
+node.set['rackspace_java']['jdk_version']    = node['rackspace_jboss']['jdk_version']
 if node['rackspace_jboss']['jdk_flavor'] == 'oracle'
-  node.set['java']['oracle']['accept_oracle_download_terms'] = true
+  node.set['rackspace_java']['oracle']['accept_oracle_download_terms'] = true
 end
-include_recipe 'java'
+include_recipe 'rackspace_java'
 
 node['rackspace_jboss']['JAVA_OPTS']['set'].each do |name, value|
   node.default['rackspace_jboss']['config']['JAVA_OPTS'].push(value)

@@ -56,12 +56,30 @@ Then added into the standalone.conf file via template.
 * `node['rackspace_jboss']['JAVA_OPTS']['set']['server_gcinterval']` - Sets server GC interval , default `'-Dsun.rmi.dgc.server.gcInterval=3600000'`
 * `node['rackspace_jboss']['config']['JAVA_OPTS']` - Array initializer to store final java_opts list
 
+### mysql_jdbc
+
+* `default['rackspace_jboss']['mysql_jdbc']['enabled']` - Triggers the running of the mysql_jdbc recipe, set true to enable default `false`
+* `default['rackspace_jboss']['mysql_jdbc']['version']` - Sets the version of the connector to download.  Only supports the 5.1 version branch.  'current' will determine the most recent version and set that up, default `'current'`
+* `default['rackspace_jboss']['mysql_jdbc']['datasource_name']` - Sets the DS name for JBoss to use, default `'MySqlDS'`
+* `default['rackspace_jboss']['mysql_jdbc']['mysql_server']['hostname']` - Sets the mysql server hostname to connect to, default `'localhost'`
+* `default['rackspace_jboss']['mysql_jdbc']['mysql_server']['port']` - Sets the port of the mysql server to connect to, default `'3306'`
+* `default['rackspace_jboss']['mysql_jdbc']['mysql_server']['dbname']` - Sets the name of the database to connect to, default `'changeme'`
+* `default['rackspace_jboss']['mysql_jdbc']['mysql_server']['username']` - Sets the database username for your connection, default `'changeme'`
+* `default['rackspace_jboss']['mysql_jdbc']['mysql_server']['password']` - Sets the database password for your connection, default `'changeme'`
+* `default['rackspace_jboss']['mysql_jdbc']['mysql_server']['min_pool_size']` - Sets the minimum pool size for the datasource, default `'10'`
+* `default['rackspace_jboss']['mysql_jdbc']['mysql_server']['max_pool_size']` - Sets the maximum pool size for the datasource, default `'100'`
+* `default['rackspace_jboss']['mysql_jdbc']['mysql_server']['prepared_statement_cache_size']` - Sets the prepared statement cache size for the datasource, default `'32'`
+
 Recipes
 -------
 
 ### default
 
-Only recipe, will download, and deploy specified version of JBoss and Java, as well as setup options outlined in the Attributes.
+This recipe will download, and deploy specified version of JBoss and Java, as well as setup options outlined in the Attributes.
+
+### mysql_jdbc
+
+This recipe will download, deploy and setup in your xml config file the MySQL/J connector.  Set node['rackspace_jboss']['mysql_jdbc']['enabled'] to true, or add rackspace_jboss::mysql_jdbc to your run list.
 
 Usage
 -----
@@ -78,14 +96,14 @@ run_list("recipe[rackspace_jboss]")
 override_attributes(
   'rackspace_jboss' => {
     'jboss_version' => "7.0.0"
-  }
-  'java' => {
-    'install_flavor' => "openjdk"
+  },
+  'rackspace_java' => {
+    'install_flavor' => "openjdk",
     'jdk_version' => "6"
   }
 )
 
-Setup as default, but override -Xms and -Xmx:
+Setup as default, but override -Xms and -Xmx, and setup the current version mysql_jdbc:
 
 name "jboss-server"
 run_list("recipe[rackspace_jboss]")
@@ -93,9 +111,17 @@ override_attributes(
   'rackspace_jboss' => {
     'JAVA_OPTS' => {
       'set' => {
-        'xms' => '-Xms4G'
+        'xms' => '-Xms4G',
         'xmx' => '-Xmx4G'
       }
+    },
+    'mysql_jdbc' => {
+      'enabled' => 'true',
+      'datasource_name' => 'foobarDS',
+      'hostname' => 'dbserver1',
+      'dbname' => 'myappdb',
+      'username' => 'mydbuser',
+      'password' => 'mydbpass'
     }
   }
 )
