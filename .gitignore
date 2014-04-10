@@ -22,6 +22,7 @@ vendor/
 .kitchen.local.yml
 .vagrant/
 .vagrant.d/
+.coverage
 
 #RVM
 .ruby-version

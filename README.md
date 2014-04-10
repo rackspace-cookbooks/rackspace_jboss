@@ -11,6 +11,8 @@ Tested on:
 - RedHat 6.4
 - CentOS 6.4
 
+* This cookbook does not support Debian based systems
+
 Attributes
 ----------
 
