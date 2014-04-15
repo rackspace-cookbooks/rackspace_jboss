@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'berkshelf', '~> 2.0'
+gem 'berkshelf', '= 2.0.14'
 gem 'hashie', '= 2.0.5'
 
 group :testing do
