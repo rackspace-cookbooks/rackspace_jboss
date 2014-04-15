@@ -4,6 +4,7 @@ gem 'berkshelf', '= 2.0.14'
 gem 'hashie', '= 2.0.5'
 gem 'solve', '= 0.8.2'
 gem 'excon', '= 0.32.1'
+gem 'net-scp', '= 1.1.2'
 
 group :testing do
   gem 'chefspec',   '~> 3.2'
