@@ -3,6 +3,14 @@ rackspace_jboss CHANGELOG
 
 This file is used to list changes made in each version of the rackspace_jboss cookbook.
 
+0.4.2
+-----
+- Refactored how the jboss_user homedir is being handled
+
+0.4.1
+-----
+- Jenkins tagged
+
 0.4.0
 -----
 - Move from java to rackspace_java
