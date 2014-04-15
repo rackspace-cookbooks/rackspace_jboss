@@ -12,10 +12,6 @@ describe 'rackspace_jboss::default' do
 
   it 'creates the JBoss user, home directory, and config directory' do
     expect(chef_run).to create_user(chef_run.node['rackspace_jboss']['jboss_user'])
-    expect(chef_run).to create_directory(chef_run.node['rackspace_jboss']['jboss_home']).with(
-      user:  chef_run.node['rackspace_jboss']['jboss_user'],
-      mode:  '0755'
-    )
     expect(chef_run).to create_directory(chef_run.node['rackspace_jboss']['jboss_as_conf']['dir']).with(
       user:  'root',
       mode: '0755'

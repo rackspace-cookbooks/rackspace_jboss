@@ -39,18 +39,13 @@ remote_file "#{Chef::Config[:file_cache_path]}/jboss-as-#{vers}.Final.tar.gz" do
 end
 
 user node['rackspace_jboss']['jboss_user'] do
-  home   node['rackspace_jboss']['jboss_home']
-  shell  '/bin/bash'
-  system true
+  home     node['rackspace_jboss']['jboss_home']
+  shell    '/bin/bash'
+  system   true
+  supports manage_home: true
   if node['rackspace_jboss']['jboss_uid']
     uid node['rackspace_jboss']['jboss_uid']
   end
-end
-
-directory node['rackspace_jboss']['jboss_home'] do
-  owner  node['rackspace_jboss']['jboss_user']
-  mode   '0755'
-  action :create
 end
 
 directory node['rackspace_jboss']['jboss_as_conf']['dir'] do
