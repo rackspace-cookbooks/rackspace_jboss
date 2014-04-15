@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 gem 'berkshelf', '= 2.0.14'
 gem 'hashie', '= 2.0.5'
+gem 'solve', '= 0.8.2'
 
 group :testing do
   gem 'chefspec',   '~> 3.2'
