@@ -17,28 +17,36 @@
 # limitations under the License.
 #
 
-default['rackspace_jboss']['jboss_home']                          = '/opt/jboss'
-default['rackspace_jboss']['jboss_user']                          = 'jboss'
-default['rackspace_jboss']['jboss_uid']                           = nil
+default['rackspace_jboss']['jboss_home']                                = '/opt/jboss'
+default['rackspace_jboss']['jboss_user']                                = 'jboss'
+default['rackspace_jboss']['jboss_uid']                                 = nil
 
 # Valid versions: '7.0.0', '7.0.1', '7.0.2', '7.1.0', '7.1.1'
-default['rackspace_jboss']['jboss_version']                       = '7.1.1'
+default['rackspace_jboss']['jboss_version']                             = '7.1.1'
 
 # Only 'standalone' is valid at this time.  Future iterations should expand
 # upon this to include all standalone variants, and domain variants.
-default['rackspace_jboss']['jboss_type']                          = 'standalone'
-default['rackspace_jboss']['jboss_xml_file']                      = 'standalone.xml'
+default['rackspace_jboss']['jboss_type']                                = 'standalone'
+default['rackspace_jboss']['jboss_xml_file']                            = 'standalone.xml'
 
 # Valid install flavors: 'oracle', 'openjdk'
 # Rackspace recommends oracle due to its better instrumentation, and better
 # debugging utilities.  RedHat recommends openjdk.
-default['rackspace_jboss']['jdk_flavor']                          = 'oracle'
+default['rackspace_jboss']['jdk_flavor']                                = 'oracle'
 
 # Valid JDK Versions: '6', '7'
-default['rackspace_jboss']['jdk_version']                         = '7'
+default['rackspace_jboss']['jdk_version']                               = '7'
 
-default['rackspace_jboss']['jboss_as_conf']['dir']                = '/etc/jboss'
-default['rackspace_jboss']['config']['jboss_as_conf']             = "#{node['rackspace_jboss']['jboss_as_conf']['dir']}/jboss-as.conf"
+default['rackspace_jboss']['jboss_as_conf']['dir']                      = '/etc/jboss'
+default['rackspace_jboss']['config']['jboss_as_conf']                   = "#{node['rackspace_jboss']['jboss_as_conf']['dir']}/jboss-as.conf"
 
-default['rackspace_jboss']['config']['public_listen_address']     = '0.0.0.0'
-default['rackspace_jboss']['config']['management_listen_address'] = '0.0.0.0'
+default['rackspace_jboss']['config']['public_listen_address']           = '0.0.0.0'
+default['rackspace_jboss']['config']['management_listen_address']       = '0.0.0.0'
+
+default['rackspace_jboss']['templates']['application-users.properties'] = 'rackspace_jboss'
+default['rackspace_jboss']['templates']['jboss.init']                   = 'rackspace_jboss'
+default['rackspace_jboss']['templates']['jboss_as.conf']                = 'rackspace_jboss'
+default['rackspace_jboss']['templates']['mgmt-users.properties']        = 'rackspace_jboss'
+default['rackspace_jboss']['templates']['mysql_jdbc_module.xml']        = 'rackspace_jboss'
+default['rackspace_jboss']['templates']['standalone.conf']              = 'rackspace_jboss'
+default['rackspace_jboss']['templates']['jboss_xml_file']               = 'rackspace_jboss'

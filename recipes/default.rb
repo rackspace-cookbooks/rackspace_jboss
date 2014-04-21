@@ -65,49 +65,61 @@ bash 'deploy_jboss' do
 end
 
 template "#{conf_dir}/#{node['rackspace_jboss']['jboss_xml_file']}" do
+  cookbook  node['rackspace_jboss']['templates']['jboss_xml_file']
   source    "#{node['rackspace_jboss']['jboss_xml_file']}.erb"
   owner     node['rackspace_jboss']['jboss_user']
   mode      '0644'
   variables(cookbook_name: cookbook_name)
+  not_if   { node['rackspace_jboss']['templates']['jboss_xml_file']['customer_supplied'] }
 end
 
 template '/etc/init.d/jboss' do
+  cookbook  node['rackspace_jboss']['templates']['jboss.init']
   source    'jboss.init.erb'
   owner     'root'
   group     'root'
   mode      '0755'
   variables(cookbook_name: cookbook_name)
+  not_if   { node['rackspace_jboss']['templates']['jboss.init']['customer_supplied'] }
 end
 
 template node['rackspace_jboss']['config']['jboss_as_conf'] do
+  cookbook  node['rackspace_jboss']['templates']['jboss_as.conf']
   source    'jboss_as.conf.erb'
   owner     'root'
   group     'root'
   mode      '0644'
   notifies  :restart, 'service[jboss]'
   variables(cookbook_name: cookbook_name)
+  not_if   { node['rackspace_jboss']['templates']['jboss_as.conf']['customer_supplied'] }
 end
 
 template "#{bin_dir}/standalone.conf" do
+  cookbook  node['rackspace_jboss']['templates']['standalone.conf']
   source    'standalone.conf.erb'
   owner     node['rackspace_jboss']['jboss_user']
   mode      '0644'
   notifies  :restart, 'service[jboss]'
   variables(cookbook_name: cookbook_name)
+  not_if   { node['rackspace_jboss']['templates']['standalone.conf']['customer_supplied'] }
 end
 
 template "#{conf_dir}/mgmt-users.properties" do
+  cookbook  node['rackspace_jboss']['templates']['mgmt-users.properties']
   source    'mgmt-users.properties.erb'
   owner     node['rackspace_jboss']['jboss_user']
   mode      '0644'
   variables(cookbook_name: cookbook_name)
+  not_if   { node['rackspace_jboss']['templates']['mgmt-users.properties']['customer_supplied'] }
 end
 
 template "#{conf_dir}/application-users.properties" do
+  cookbook  node['rackspace_jboss']['templates']['application-users.properties']
   source    'application-users.properties.erb'
   owner     node['rackspace_jboss']['jboss_user']
   mode      '0644'
   variables(cookbook_name: cookbook_name)
+  not_if   { node['rackspace_jboss']['templates']['application-users.properties']['customer_supplied'] }
 end
 
 if node['rackspace_jboss']['mysql_jdbc']['enabled']

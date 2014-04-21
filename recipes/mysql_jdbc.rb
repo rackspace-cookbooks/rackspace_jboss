@@ -63,9 +63,11 @@ bash 'deploy_mysql_jdbc' do
 end
 
 template "#{install_dir}/module.xml" do
+  cookbook  node['rackspace_jboss']['templates']['mysql_jdbc_module.xml']
   source    'mysql_jdbc_module.xml.erb'
   owner     node['rackspace_jboss']['jboss_user']
   mode      '0644'
   variables(cookbook_name: cookbook_name, jar_file: jar_file)
+  not_if   { node['rackspace_jboss']['templates']['mysql_jdbc_module.xml']['customer_supplied'] }
   notifies  :restart, 'service[jboss]'
 end
