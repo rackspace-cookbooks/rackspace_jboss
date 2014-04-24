@@ -18,7 +18,7 @@
 #
 include_recipe 'rackspace_jboss::java_install'
 
-node['rackspace_jboss']['JAVA_OPTS']['set'].each do |name, value|
+node['rackspace_jboss']['JAVA_OPTS']['set'].each do |_name, value|
   node.default['rackspace_jboss']['config']['JAVA_OPTS'].push(value)
 end
 
