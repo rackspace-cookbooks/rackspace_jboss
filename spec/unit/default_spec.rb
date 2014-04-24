@@ -23,13 +23,17 @@ describe 'rackspace_jboss::default' do
   end
 
   it 'creates the startup script from template' do
-    expect(chef_run).to create_template('/etc/init.d/jboss')
-    expect(chef_run).to render_file('/etc/init.d/jboss').with_content('JBoss standalone control script')
+    unless chef_run.node['rackspace_jboss']['templates']['customer_supplied']['jboss.init']
+      expect(chef_run).to create_template('/etc/init.d/jboss')
+      expect(chef_run).to render_file('/etc/init.d/jboss').with_content('JBoss standalone control script')
+    end
   end
 
   it 'creates the jboss_as conf file from template' do
-    expect(chef_run).to create_template(chef_run.node['rackspace_jboss']['config']['jboss_as_conf'])
-    expect(chef_run).to render_file(chef_run.node['rackspace_jboss']['config']['jboss_as_conf']).with_content('JBOSS_USER')
+    unless chef_run.node['rackspace_jboss']['templates']['customer_supplied']['jboss_as.conf']
+      expect(chef_run).to create_template(chef_run.node['rackspace_jboss']['config']['jboss_as_conf'])
+      expect(chef_run).to render_file(chef_run.node['rackspace_jboss']['config']['jboss_as_conf']).with_content('JBOSS_USER')
+    end
   end
 
   it 'enables and starts the JBoss service' do
@@ -37,110 +41,160 @@ describe 'rackspace_jboss::default' do
     expect(chef_run).to start_service('jboss')
   end
 
+  context 'Customer supplies configs' do
+    it 'does not create templates when customer supplies configs' do
+      chef_run.node.set['rackspace_jboss']['templates']['customer_supplied']['application-users.properties']  = true
+      chef_run.node.set['rackspace_jboss']['templates']['customer_supplied']['jboss.init']                    = true
+      chef_run.node.set['rackspace_jboss']['templates']['customer_supplied']['jboss_as.conf']                 = true
+      chef_run.node.set['rackspace_jboss']['templates']['customer_supplied']['mgmt-users.properties']         = true
+      chef_run.node.set['rackspace_jboss']['templates']['customer_supplied']['mysql_jdbc_module.xml']         = true
+      chef_run.node.set['rackspace_jboss']['templates']['customer_supplied']['standalone.conf']               = true
+      chef_run.node.set['rackspace_jboss']['templates']['customer_supplied']['jboss_xml_file']                = true
+      chef_run.converge(described_recipe)
+      conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_install_path']}/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
+      bin_dir  = "#{chef_run.node['rackspace_jboss']['jboss_install_path']}/bin"
+      install_dir = "#{chef_run.node['rackspace_jboss']['jboss_install_path']}/modules/com/mysql/main"
+      expect(chef_run).to_not create_template("#{conf_dir}/application-users.properties")
+      expect(chef_run).to_not create_template('/etc/init.d/jboss')
+      expect(chef_run).to_not create_template(chef_run.node['rackspace_jboss']['config']['jboss_as_conf'])
+      expect(chef_run).to_not create_template("#{conf_dir}/mgmt-users.properties")
+      expect(chef_run).to_not create_template("#{install_dir}/module.xml")
+      expect(chef_run).to_not create_template("#{bin_dir}/standalone.conf")
+      expect(chef_run).to_not create_template("#{conf_dir}/#{chef_run.node['rackspace_jboss']['jboss_xml_file']}")
+    end
+  end
+
   context 'JBoss v7.1.1' do
     it 'downloads the Jboss tarball' do
-      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.1.1'
+      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.1.1.Final'
       chef_run.converge(described_recipe)
       expect(chef_run).to create_remote_file_if_missing(Chef::Config['file_cache_path'] + '/jboss-as-7.1.1.Final.tar.gz')
     end
 
     it 'creates the users.properties files from templates, and populates them with users' do
-      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.1.1'
+      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.1.1.Final'
       chef_run.node.set['rackspace_jboss']['config']['mgmt-users'] = [%w(admin 29a28757d330005880b98ead71ba2aa8),
                                                                       %w(test 8aa2ab17dae89b088500033d75782a92)]
       chef_run.node.set['rackspace_jboss']['config']['application-users'] = [%w(admin 29a28757d330005880b98ead71ba2aa8),
                                                                              %w(test 8aa2ab17dae89b088500033d75782a92)]
       chef_run.converge(described_recipe)
-      conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.1.1.Final/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
-      expect(chef_run).to create_template("#{conf_dir}/mgmt-users.properties")
-      expect(chef_run).to create_template("#{conf_dir}/application-users.properties")
+      conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_install_path']}/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
+      unless chef_run.node['rackspace_jboss']['templates']['customer_supplied']['mgmt-users.properties']
+        expect(chef_run).to create_template("#{conf_dir}/mgmt-users.properties")
+      end
+      unless chef_run.node['rackspace_jboss']['templates']['customer_supplied']['application-users.properties']
+        expect(chef_run).to create_template("#{conf_dir}/application-users.properties")
+      end
     end
 
     it 'creates the xml config file, and standalone.conf file' do
-      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.1.1'
+      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.1.1.Final'
       chef_run.converge(described_recipe)
-      conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.1.1.Final/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
-      bin_dir  = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.1.1.Final/bin"
-      expect(chef_run).to create_template("#{conf_dir}/#{chef_run.node['rackspace_jboss']['jboss_xml_file']}")
-      expect(chef_run).to create_template("#{bin_dir}/standalone.conf")
+      conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_install_path']}/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
+      bin_dir  = "#{chef_run.node['rackspace_jboss']['jboss_install_path']}/bin"
+      unless chef_run.node['rackspace_jboss']['templates']['customer_supplied']['jboss_xml_file']
+        expect(chef_run).to create_template("#{conf_dir}/#{chef_run.node['rackspace_jboss']['jboss_xml_file']}")
+      end
+      unless chef_run.node['rackspace_jboss']['templates']['customer_supplied']['standalone.conf']
+        expect(chef_run).to create_template("#{bin_dir}/standalone.conf")
+      end
     end
   end
 
   context 'JBoss v7.1.0' do
     it 'downloads the JBoss 7.1.0 tarball' do
-      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.1.0'
+      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.1.0.Final'
       chef_run.converge(described_recipe)
       expect(chef_run).to create_remote_file_if_missing(Chef::Config['file_cache_path'] + '/jboss-as-7.1.0.Final.tar.gz')
     end
 
     it 'creates the users.properties files from templates, and populates them with users' do
-      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.1.0'
+      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.1.0.Final'
       chef_run.node.set['rackspace_jboss']['config']['mgmt-users'] = [%w(admin 29a28757d330005880b98ead71ba2aa8),
                                                                       %w(test 8aa2ab17dae89b088500033d75782a92)]
       chef_run.node.set['rackspace_jboss']['config']['application-users'] = [%w(admin 29a28757d330005880b98ead71ba2aa8),
                                                                              %w(test 8aa2ab17dae89b088500033d75782a92)]
       chef_run.converge(described_recipe)
-      conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.1.0.Final/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
-
-      expect(chef_run).to create_template("#{conf_dir}/mgmt-users.properties")
-      expect(chef_run).to create_template("#{conf_dir}/application-users.properties")
+      conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_install_path']}/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
+      unless chef_run.node['rackspace_jboss']['templates']['customer_supplied']['mgmt-users.properties']
+        expect(chef_run).to create_template("#{conf_dir}/mgmt-users.properties")
+      end
+      unless chef_run.node['rackspace_jboss']['templates']['customer_supplied']['application-users.properties']
+        expect(chef_run).to create_template("#{conf_dir}/application-users.properties")
+      end
     end
 
     it 'creates the xml config file, and standalone.conf file' do
-      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.1.0'
+      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.1.0.Final'
       chef_run.converge(described_recipe)
-      conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.1.0.Final/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
-      bin_dir  = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.1.0.Final/bin"
-      expect(chef_run).to create_template("#{conf_dir}/#{chef_run.node['rackspace_jboss']['jboss_xml_file']}")
-      expect(chef_run).to create_template("#{bin_dir}/standalone.conf")
+      conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_install_path']}/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
+      bin_dir  = "#{chef_run.node['rackspace_jboss']['jboss_install_path']}/bin"
+      unless chef_run.node['rackspace_jboss']['templates']['customer_supplied']['jboss_xml_file']
+        expect(chef_run).to create_template("#{conf_dir}/#{chef_run.node['rackspace_jboss']['jboss_xml_file']}")
+      end
+      unless chef_run.node['rackspace_jboss']['templates']['customer_supplied']['standalone.conf']
+        expect(chef_run).to create_template("#{bin_dir}/standalone.conf")
+      end
     end
 
     it 'checks mysql_jdbc was deployed' do
-      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.1.0'
+      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.1.0.Final'
       chef_run.converge(described_recipe)
       if chef_run.node['rackspace_jboss']['mysql_jdbc']['enabled']
-        install_dir = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.1.0.Final/modules/com/mysql/main"
+        install_dir = "#{chef_run.node['rackspace_jboss']['jboss_install_path']}/modules/com/mysql/main"
         expect(chef_run).to create_directory(install_dir)
-        expect(chef_run).to create_template("#{install_dir}/module.xml")
+        unless chef_run.node['rackspace_jboss']['templates']['customer_supplied']['mysql_jdbc_module.xml']
+          expect(chef_run).to create_template("#{install_dir}/module.xml")
+        end
       end
     end
   end
 
   context 'JBoss v7.0.0' do
     it 'downloads the JBoss 7.0.0 tarball' do
-      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.0.0'
+      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.0.0.Final'
       chef_run.converge(described_recipe)
       expect(chef_run).to create_remote_file_if_missing(Chef::Config['file_cache_path'] + '/jboss-as-7.0.0.Final.tar.gz')
     end
 
     it 'creates the users.properties files from templates, and populates them with users' do
-      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.0.0'
+      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.0.0.Final'
       chef_run.node.set['rackspace_jboss']['config']['mgmt-users'] = [%w(admin 29a28757d330005880b98ead71ba2aa8),
                                                                       %w(test 8aa2ab17dae89b088500033d75782a92)]
       chef_run.node.set['rackspace_jboss']['config']['application-users'] = [%w(admin 29a28757d330005880b98ead71ba2aa8),
                                                                              %w(test 8aa2ab17dae89b088500033d75782a92)]
       chef_run.converge(described_recipe)
-      conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.0.0.Final/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
-      expect(chef_run).to create_template("#{conf_dir}/mgmt-users.properties")
-      expect(chef_run).to create_template("#{conf_dir}/application-users.properties")
+      conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_install_path']}/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
+      unless chef_run.node['rackspace_jboss']['templates']['customer_supplied']['mgmt-users.properties']
+        expect(chef_run).to create_template("#{conf_dir}/mgmt-users.properties")
+      end
+      unless chef_run.node['rackspace_jboss']['templates']['customer_supplied']['application-users.properties']
+        expect(chef_run).to create_template("#{conf_dir}/application-users.properties")
+      end
     end
 
     it 'creates the xml config file, and standalone.conf file' do
-      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.0.0'
+      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.0.0.Final'
       chef_run.converge(described_recipe)
-      conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.0.0.Final/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
-      bin_dir  = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.0.0.Final/bin"
-      expect(chef_run).to create_template("#{conf_dir}/#{chef_run.node['rackspace_jboss']['jboss_xml_file']}")
-      expect(chef_run).to create_template("#{bin_dir}/standalone.conf")
+      conf_dir = "#{chef_run.node['rackspace_jboss']['jboss_install_path']}/#{chef_run.node['rackspace_jboss']['jboss_type']}/configuration"
+      bin_dir  = "#{chef_run.node['rackspace_jboss']['jboss_install_path']}/bin"
+      unless chef_run.node['rackspace_jboss']['templates']['customer_supplied']['jboss_xml_file']
+        expect(chef_run).to create_template("#{conf_dir}/#{chef_run.node['rackspace_jboss']['jboss_xml_file']}")
+      end
+      unless chef_run.node['rackspace_jboss']['templates']['customer_supplied']['standalone.conf']
+        expect(chef_run).to create_template("#{bin_dir}/standalone.conf")
+      end
     end
 
     it 'checks mysql_jdbc was deployed' do
-      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.0.0'
+      chef_run.node.set['rackspace_jboss']['jboss_version'] = '7.0.0.Final'
       chef_run.converge(described_recipe)
       if chef_run.node['rackspace_jboss']['mysql_jdbc']['enabled']
-        install_dir = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-7.0.0.Final/modules/com/mysql/main"
+        install_dir = "#{chef_run.node['rackspace_jboss']['jboss_install_path']}/modules/com/mysql/main"
         expect(chef_run).to create_directory(install_dir)
-        expect(chef_run).to create_template("#{install_dir}/module.xml")
+        unless chef_run.node['rackspace_jboss']['templates']['customer_supplied']['mysql_jdbc_module.xml']
+          expect(chef_run).to create_template("#{install_dir}/module.xml")
+        end
       end
     end
   end

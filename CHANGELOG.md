@@ -3,6 +3,13 @@ rackspace_jboss CHANGELOG
 
 This file is used to list changes made in each version of the rackspace_jboss cookbook.
 
+0.5.0
+-----
+- Massive refactor for readability's sake
+- Added guards in all template resources to not run if the configuration is coming from another source, like SVN or git
+- Added jboss_install_path attribute to handle existing jboss layouts that stray from how this cookbook expects.
+- Added testing around all additions, as well as added actual testing within kitchen runs.
+
 0.4.2
 -----
 - Refactored how the jboss_user homedir is being handled
