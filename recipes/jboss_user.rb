@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: rackspace_jboss
-# Recipe:: default
+# Recipe:: jboss_user
 #
 # Copyright 2014, Rackspace, US Inc.
 #
@@ -16,21 +16,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-include_recipe 'rackspace_jboss::java_install'
-
-node['rackspace_jboss']['JAVA_OPTS']['set'].each do |name, value|
-  node.default['rackspace_jboss']['config']['JAVA_OPTS'].push(value)
-end
-
-include_recipe 'rackspace_jboss::jboss_user'
-include_recipe 'rackspace_jboss::jboss_install'
-include_recipe 'rackspace_jboss::jboss_setup'
-
-if node['rackspace_jboss']['mysql_jdbc']['enabled']
-  include_recipe 'rackspace_jboss::mysql_jdbc'
-end
-
-service 'jboss' do
-  supports status: true, restart: true, reload: false
-  action   [:enable, :start]
+user node['rackspace_jboss']['jboss_user'] do
+  home     node['rackspace_jboss']['jboss_home']
+  shell    '/bin/bash'
+  system   true
+  supports manage_home: true
+  if node['rackspace_jboss']['jboss_uid']
+    uid node['rackspace_jboss']['jboss_uid']
+  end
 end
