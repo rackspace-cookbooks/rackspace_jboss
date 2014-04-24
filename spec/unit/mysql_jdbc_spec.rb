@@ -5,7 +5,7 @@ describe 'rackspace_jboss::mysql_jdbc' do
 
   before :each do
     @vers = chef_run.node['rackspace_jboss']['jboss_version']
-    @install_dir = "#{chef_run.node['rackspace_jboss']['jboss_home']}/jboss-as-#{@vers}.Final/modules/com/mysql/main"
+    @install_dir = "#{chef_run.node['rackspace_jboss']['jboss_install_path']}/modules/com/mysql/main"
   end
 
   it 'creates the mysql/main subdirectory' do

@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: rackspace_jboss
-# Recipe:: default
+# Recipe:: java_install
 #
 # Copyright 2014, Rackspace, US Inc.
 #
@@ -16,21 +16,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-include_recipe 'rackspace_jboss::java_install'
-
-node['rackspace_jboss']['JAVA_OPTS']['set'].each do |_name, value|
-  node.default['rackspace_jboss']['config']['JAVA_OPTS'].push(value)
+node.set['rackspace_java']['install_flavor'] = node['rackspace_jboss']['jdk_flavor']
+node.set['rackspace_java']['jdk_version']    = node['rackspace_jboss']['jdk_version']
+if node['rackspace_jboss']['jdk_flavor'] == 'oracle'
+  node.set['rackspace_java']['oracle']['accept_oracle_download_terms'] = true
 end
-
-include_recipe 'rackspace_jboss::jboss_user'
-include_recipe 'rackspace_jboss::jboss_install'
-include_recipe 'rackspace_jboss::jboss_setup'
-
-if node['rackspace_jboss']['mysql_jdbc']['enabled']
-  include_recipe 'rackspace_jboss::mysql_jdbc'
-end
-
-service 'jboss' do
-  supports status: true, restart: true, reload: false
-  action   [:enable, :start]
-end
+include_recipe 'rackspace_java'

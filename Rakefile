@@ -29,9 +29,7 @@ namespace :style do
 
   require 'foodcritic'
   desc 'Run Chef style checks'
-  FoodCritic::Rake::LintTask.new(:chef) { |task| 
-    task.options = { fail_tags: ['any'] }
-  }
+  FoodCritic::Rake::LintTask.new(:chef) { |task| task.options = { fail_tags: ['any'] } }
 end
 
 desc 'Run all style checks'
@@ -60,4 +58,4 @@ namespace :travis do
 end
 
 # The default rake task should just run it all
-task default: ['style', 'unit', 'integration']
+task default: %w(style unit integration)

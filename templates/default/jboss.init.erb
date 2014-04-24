@@ -28,7 +28,7 @@ fi
 # Set defaults.
 
 if [ -z "$JBOSS_HOME" ]; then
-  JBOSS_HOME=<%= node['rackspace_jboss']['jboss_home'] %>/jboss-as-<%= node['rackspace_jboss']['jboss_version'] %>.Final
+  JBOSS_HOME=<%= node['rackspace_jboss']['jboss_install_path'] %>
 fi
 export JBOSS_HOME
 
@@ -52,6 +52,12 @@ fi
 if [ -z "$JBOSS_CONFIG" ]; then
   JBOSS_CONFIG=standalone.xml
 fi
+
+<% if node['rackspace_jboss']['jboss_version'].include?('7.0') %>
+STARTUP_ARG=--server-config=
+<% else %>
+STARTUP_ARG='-c '
+<% end %>
 
 JBOSS_SCRIPT=$JBOSS_HOME/bin/standalone.sh
 
@@ -90,9 +96,9 @@ start() {
 
   if [ ! -z "$JBOSS_USER" ]; then
     if [ -x /etc/rc.d/init.d/functions ]; then
-      daemon --user $JBOSS_USER LAUNCH_JBOSS_IN_BACKGROUND=1 JBOSS_PIDFILE=$JBOSS_PIDFILE $JBOSS_SCRIPT -c $JBOSS_CONFIG 2>&1 > $JBOSS_CONSOLE_LOG &
+      daemon --user $JBOSS_USER LAUNCH_JBOSS_IN_BACKGROUND=1 JBOSS_PIDFILE=$JBOSS_PIDFILE $JBOSS_SCRIPT ${STARTUP_ARG}$JBOSS_CONFIG 2>&1 > $JBOSS_CONSOLE_LOG &
     else
-      su - $JBOSS_USER -c "LAUNCH_JBOSS_IN_BACKGROUND=1 JBOSS_PIDFILE=$JBOSS_PIDFILE $JBOSS_SCRIPT -c $JBOSS_CONFIG" 2>&1 > $JBOSS_CONSOLE_LOG &
+      su - $JBOSS_USER -c "LAUNCH_JBOSS_IN_BACKGROUND=1 JBOSS_PIDFILE=$JBOSS_PIDFILE $JBOSS_SCRIPT ${STARTUP_ARG}$JBOSS_CONFIG" 2>&1 > $JBOSS_CONSOLE_LOG &
     fi
   fi
 

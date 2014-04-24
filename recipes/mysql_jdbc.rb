@@ -23,7 +23,7 @@ node.set['rackspace_jboss']['mysql_jdbc']['enabled'] = true
 include_recipe 'rackspace_jboss::default'
 
 vers        = node['rackspace_jboss']['jboss_version']
-install_dir = "#{node['rackspace_jboss']['jboss_home']}/jboss-as-#{vers}.Final/modules/com/mysql/main"
+install_dir = "#{node['rackspace_jboss']['jboss_home']}/jboss-as-#{vers}/modules/com/mysql/main"
 curver      = `curl -s http://dev.mysql.com/downloads/connector/j/ | egrep 'Connector' | egrep -o '[0-9]+\.[0-9]+\.[0-9]+'`.delete("\n") # ~FC048
 
 if node['rackspace_jboss']['mysql_jdbc']['version'] == 'current'
@@ -63,9 +63,11 @@ bash 'deploy_mysql_jdbc' do
 end
 
 template "#{install_dir}/module.xml" do
+  cookbook  node['rackspace_jboss']['templates']['mysql_jdbc_module.xml']
   source    'mysql_jdbc_module.xml.erb'
   owner     node['rackspace_jboss']['jboss_user']
   mode      '0644'
   variables(cookbook_name: cookbook_name, jar_file: jar_file)
+  not_if   { node['rackspace_jboss']['templates']['customer_supplied']['mysql_jdbc_module.xml'] }
   notifies  :restart, 'service[jboss]'
 end
