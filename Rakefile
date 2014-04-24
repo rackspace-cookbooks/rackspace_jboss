@@ -58,4 +58,4 @@ namespace :travis do
 end
 
 # The default rake task should just run it all
-task default: %w{style unit integration}
+task default: %w(style unit integration)
