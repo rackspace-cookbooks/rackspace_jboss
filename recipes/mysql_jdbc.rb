@@ -22,8 +22,7 @@ node.set['rackspace_jboss']['mysql_jdbc']['enabled'] = true
 
 include_recipe 'rackspace_jboss::default'
 
-vers        = node['rackspace_jboss']['jboss_version']
-install_dir = "#{node['rackspace_jboss']['jboss_home']}/jboss-as-#{vers}/modules/com/mysql/main"
+install_dir = "#{node['rackspace_jboss']['jboss_install_path']}/modules/com/mysql/main"
 curver      = `curl -s http://dev.mysql.com/downloads/connector/j/ | egrep 'Connector' | egrep -o '[0-9]+\.[0-9]+\.[0-9]+'`.delete("\n") # ~FC048
 
 if node['rackspace_jboss']['mysql_jdbc']['version'] == 'current'

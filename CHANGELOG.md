@@ -3,6 +3,10 @@ rackspace_jboss CHANGELOG
 
 This file is used to list changes made in each version of the rackspace_jboss cookbook.
 
+0.5.1
+-----
+- Fixed a line that was still using ['jboss_home']/jboss-as-#{vers} instead of ['jboss_install_path']
+
 0.5.0
 -----
 - Massive refactor for readability's sake
